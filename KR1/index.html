@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <title>KR1 — Демонстрация API</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #0f0f1a;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 40px;
+            font-size: 0.95rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .card {
+            background: #1a1a2e;
+            border: 1px solid #2a2a4a;
+            border-radius: 12px;
+            padding: 24px;
+            transition: border-color 0.3s;
+        }
+
+        .card:hover {
+            border-color: #667eea;
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            color: #667eea;
+            margin-bottom: 6px;
+        }
+
+        .card .method {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .get {
+            background: #1b5e20;
+            color: #a5d6a7;
+        }
+
+        .post {
+            background: #e65100;
+            color: #ffcc80;
+        }
+
+        .card .route {
+            font-family: monospace;
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+
+        .card p {
+            color: #999;
+            font-size: 0.85rem;
+            margin: 10px 0 16px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        input,
+        textarea {
+            background: #16213e;
+            border: 1px solid #2a2a4a;
+            color: #e0e0e0;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            outline: none;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: #667eea;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            white-space: nowrap;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        .result {
+            background: #16213e;
+            border: 1px solid #2a2a4a;
+            border-radius: 8px;
+            padding: 14px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: #a5d6a7;
+            min-height: 44px;
+            white-space: pre-wrap;
+            word-break: break-all;
+            display: none;
+        }
+
+        .result.visible {
+            display: block;
+        }
+
+        .result.error {
+            color: #ef9a9a;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>KR1 — Демонстрация API</h1>
+    <p class="subtitle">Я ОБОЖАЮ ВСТАВАТЬ К ПЕРВОЙ ПАРЕ :)</p>
+
+    <div class="container">
+
+        <!-- Задание 1.2: GET /users -->
+        <div class="card">
+            <h2><span class="method get">GET</span><span class="route">/users</span></h2>
+            <p>Задание 1.2 — Получить данные пользователя (модель User из models.go)</p>
+            <button onclick="fetchUsers()">Запросить</button>
+            <div class="result" id="res-users"></div>
+        </div>
+
+        <!-- Задание 1.3: POST /calculate -->
+        <div class="card">
+            <h2><span class="method post">POST</span><span class="route">/calculate</span></h2>
+            <p>Задание 1.3 — Калькулятор: сумма двух чисел</p>
+            <div class="form-row">
+                <input type="number" id="num1" placeholder="num1" value="5">
+                <input type="number" id="num2" placeholder="num2" value="10">
+                <button onclick="fetchCalculate()">Посчитать</button>
+            </div>
+            <div class="result" id="res-calc"></div>
+        </div>
+
+        <!-- Задание 1.4: POST /user -->
+        <div class="card">
+            <h2><span class="method post">POST</span><span class="route">/user</span></h2>
+            <p>Задание 1.4 — Проверка совершеннолетия (is_adult)</p>
+            <div class="form-row">
+                <input type="text" id="userName" placeholder="Имя" value="Savelyev Anton">
+                <input type="number" id="userAge" placeholder="Возраст" value="21">
+                <button onclick="fetchUser()">Проверить</button>
+            </div>
+            <div class="result" id="res-user"></div>
+        </div>
+
+        <!-- Задание 2.1/2.2: POST /feedback -->
+        <div class="card">
+            <h2><span class="method post">POST</span><span class="route">/feedback</span></h2>
+            <p>Задание 2.1/2.2 — Отправить отзыв (с валидацией: имя 2-50 символов, сообщение 10-500 символов, запрет
+                слов: кринж, рофл, вайб)</p>
+            <div class="form-row">
+                <input type="text" id="fbName" placeholder="Имя" value="Артур">
+            </div>
+            <div class="form-row">
+                <textarea id="fbMessage"
+                    placeholder="Сообщение (мин. 10 символов)">Это тяжело, но я справлюсь!</textarea>
+            </div>
+            <div class="form-row">
+                <button onclick="fetchFeedback()">Отправить отзыв</button>
+                <button onclick="fetchFeedbacks()"
+                    style="background: linear-gradient(135deg, #1b5e20, #388e3c);">Показать все отзывы</button>
+            </div>
+            <div class="result" id="res-fb"></div>
+        </div>
+
+    </div>
+
+    <script>
+        function showResult(id, data, isError) {
+            const el = document.getElementById(id);
+            el.textContent = JSON.stringify(data, null, 2);
+            el.className = 'result visible' + (isError ? ' error' : '');
+        }
+
+        async function fetchUsers() {
+            try {
+                const res = await fetch('/users');
+                const data = await res.json();
+                showResult('res-users', data, false);
+            } catch (e) {
+                showResult('res-users', { error: e.message }, true);
+            }
+        }
+
+        async function fetchCalculate() {
+            try {
+                const num1 = parseFloat(document.getElementById('num1').value);
+                const num2 = parseFloat(document.getElementById('num2').value);
+                const res = await fetch('/calculate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ num1, num2 })
+                });
+                const data = await res.json();
+                showResult('res-calc', data, false);
+            } catch (e) {
+                showResult('res-calc', { error: e.message }, true);
+            }
+        }
+
+        async function fetchUser() {
+            try {
+                const name = document.getElementById('userName').value;
+                const age = parseInt(document.getElementById('userAge').value);
+                const res = await fetch('/user', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, age })
+                });
+                const data = await res.json();
+                showResult('res-user', data, false);
+            } catch (e) {
+                showResult('res-user', { error: e.message }, true);
+            }
+        }
+
+        async function fetchFeedback() {
+            try {
+                const name = document.getElementById('fbName').value;
+                const message = document.getElementById('fbMessage').value;
+                const res = await fetch('/feedback', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, message })
+                });
+                const data = await res.json();
+                showResult('res-fb', data, !res.ok);
+            } catch (e) {
+                showResult('res-fb', { error: e.message }, true);
+            }
+        }
+
+        async function fetchFeedbacks() {
+            try {
+                const res = await fetch('/feedbacks');
+                const data = await res.json();
+                showResult('res-fb', data, false);
+            } catch (e) {
+                showResult('res-fb', { error: e.message }, true);
+            }
+        }
+    </script>
+
+</body>
+
+</html>
